@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: orchestrator-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    networks:
+      - orchestrator-network
+
+  postgres-orchestrator:
+    image: postgres:13
+    container_name: postgres-orchestrator
+    environment:
+      POSTGRES_DB: orchestrator_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "8432:5432"
+    volumes:
+      - postgres-orchestrator-data:/var/lib/postgresql/data
+    networks:
+      - orchestrator-network
+
+  orchestrator-app:
+    build:
+      context: ..
+      dockerfile: Orchestrator/Dockerfile
+    container_name: orchestrator-app
+    depends_on:
+      - rabbitmq
+      - postgres-orchestrator
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__OrchestratorDatabase=Host=postgres-orchestrator;Port=5432;Database=orchestrator_db;Username=postgres;Password=postgres
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+    ports:
+      - "5000:80"
+    networks:
+      - orchestrator-network
+    restart: unless-stopped
+
+volumes:
+  postgres-orchestrator-data:
+
+networks:
+  orchestrator-network:
+    driver: bridge

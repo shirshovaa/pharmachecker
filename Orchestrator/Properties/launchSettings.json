@@ -38,6 +38,15 @@
       },
       "publishAllPorts": true,
       "useSSL": true
+    },
+    "Container (Docker-Compose)": {
+      "commandName": "Executable",
+      "executablePath": "docker-compose",
+      "commandLineArgs": "up --build",
+      "workingDirectory": "../Orchestrator/",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
     }
   },
   "$schema": "http://json.schemastore.org/launchsettings.json",

@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36212.18 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAggregator", "DataAggregator\DataAggregator.csproj", "{79012A92-B03A-4F4F-94E8-27797A770B00}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataHarvesterApteka103By", "DataHarvesterApteka103By\DataHarvesterApteka103By.csproj", "{BA42D9C6-5A6C-4F32-9037-3306A78F545D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataHarvesterTabletkaBy", "DataHarvesterTabletkaBy\DataHarvesterTabletkaBy.csproj", "{FA173A1A-1530-4A2F-81B8-2C9AAA1AE8CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataHarvester", "DataHarvester\DataHarvester.csproj", "{530F028E-737F-484D-B66B-9FFA7E7B135D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchestrator", "Orchestrator\Orchestrator.csproj", "{DDDD405E-C502-4E9E-8CD2-BBFE28B68BFB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationBot", "NotificationBot\NotificationBot.csproj", "{96907102-6E9C-4C58-837A-1E88971A340A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{79012A92-B03A-4F4F-94E8-27797A770B00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79012A92-B03A-4F4F-94E8-27797A770B00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79012A92-B03A-4F4F-94E8-27797A770B00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79012A92-B03A-4F4F-94E8-27797A770B00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA42D9C6-5A6C-4F32-9037-3306A78F545D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA42D9C6-5A6C-4F32-9037-3306A78F545D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA42D9C6-5A6C-4F32-9037-3306A78F545D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA42D9C6-5A6C-4F32-9037-3306A78F545D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA173A1A-1530-4A2F-81B8-2C9AAA1AE8CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA173A1A-1530-4A2F-81B8-2C9AAA1AE8CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA173A1A-1530-4A2F-81B8-2C9AAA1AE8CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA173A1A-1530-4A2F-81B8-2C9AAA1AE8CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{530F028E-737F-484D-B66B-9FFA7E7B135D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{530F028E-737F-484D-B66B-9FFA7E7B135D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{530F028E-737F-484D-B66B-9FFA7E7B135D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{530F028E-737F-484D-B66B-9FFA7E7B135D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDDD405E-C502-4E9E-8CD2-BBFE28B68BFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDDD405E-C502-4E9E-8CD2-BBFE28B68BFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDDD405E-C502-4E9E-8CD2-BBFE28B68BFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDDD405E-C502-4E9E-8CD2-BBFE28B68BFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96907102-6E9C-4C58-837A-1E88971A340A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96907102-6E9C-4C58-837A-1E88971A340A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96907102-6E9C-4C58-837A-1E88971A340A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96907102-6E9C-4C58-837A-1E88971A340A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {75EBFD7A-96EA-41EF-BEEC-2BB676896C77}
+	EndGlobalSection
+EndGlobal

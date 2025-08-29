@@ -12,7 +12,7 @@ using Orchestrator.Database;
 namespace Orchestrator.Migrations
 {
     [DbContext(typeof(OrchestratorDbContext))]
-    [Migration("20250827135731_Initial")]
+    [Migration("20250828113846_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -200,7 +200,6 @@ namespace Orchestrator.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("CurrentState")
-                        .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
@@ -215,7 +214,7 @@ namespace Orchestrator.Migrations
 
                     b.HasKey("CorrelationId");
 
-                    b.ToTable("drug_collection_saga_states", (string)null);
+                    b.ToTable("DrugCollectionSagaState", (string)null);
                 });
 
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>

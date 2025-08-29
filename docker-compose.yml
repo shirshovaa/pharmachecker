@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:3.12-management
     container_name: rabbitmq
     ports:
       - "5672:5672"
@@ -10,6 +10,8 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
     networks:
       - pharmacy-network
 
@@ -30,7 +32,7 @@ services:
 
   orchestrator:
     build:
-      context: ..
+      context: .
       dockerfile: Orchestrator/Dockerfile
     container_name: orchestrator
     depends_on:
@@ -43,7 +45,7 @@ services:
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest
     volumes:
-      #- ~/.vsdbg:/remote_debugger:rw
+      - ~/.vsdbg:/remote_debugger:rw
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     ports:
@@ -51,14 +53,54 @@ services:
     networks:
       - pharmacy-network
     restart: unless-stopped
+    cap_add:
+      - SYS_PTRACE
+
+  data-harvester-tabletka-by:
+    build:
+      context: .
+      dockerfile: DataHarvesterTabletkaBy/Dockerfile
+    container_name: data-harvester-tabletka-by
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+    ports:
+      - "6001:80"
+    networks:
+      - pharmacy-network
+    restart: unless-stopped
     # Ключевые настройки для отладки:
-    # cap_add:
-    #  - SYS_PTRACE
-    #security_opt:
-    #  - seccomp:unconfined
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+  data-harvester-apteka-103-by:
+    build: 
+      context: .
+      dockerfile: DataHarvesterApteka103By/Dockerfile
+    container_name: data-harvester-apteka-103-by
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+    ports:
+      - "5001:80"
+    networks:
+      - pharmacy-network
+    restart: unless-stopped
+    # Ключевые настройки для отладки:
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
 
 volumes:
   postgres-orchestrator-data:
+  rabbitmq-data:
 
 networks:
   pharmacy-network:

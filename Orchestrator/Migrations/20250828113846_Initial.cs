@@ -13,17 +13,17 @@ namespace Orchestrator.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "drug_collection_saga_states",
+                name: "DrugCollectionSagaState",
                 columns: table => new
                 {
                     CorrelationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CurrentState = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    CurrentState = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
                     Letter = table.Column<string>(type: "character varying(1)", maxLength: 1, nullable: false),
                     Version = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_drug_collection_saga_states", x => x.CorrelationId);
+                    table.PrimaryKey("PK_DrugCollectionSagaState", x => x.CorrelationId);
                 });
 
             migrationBuilder.CreateTable(
@@ -144,7 +144,7 @@ namespace Orchestrator.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "drug_collection_saga_states");
+                name: "DrugCollectionSagaState");
 
             migrationBuilder.DropTable(
                 name: "OutboxMessage");

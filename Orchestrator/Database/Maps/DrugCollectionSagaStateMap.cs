@@ -8,7 +8,7 @@ namespace Orchestrator.Database.Maps
 	{
 		public void Configure(EntityTypeBuilder<DrugCollectionSagaState> builder)
 		{
-			builder.ToTable("drug_collection_saga_states");
+			builder.ToTable("DrugCollectionSagaState");
 			builder.HasKey(x => x.CorrelationId);
 			builder.Property(x => x.CurrentState).HasMaxLength(64);
 			builder.Property(x => x.Letter).HasMaxLength(1);

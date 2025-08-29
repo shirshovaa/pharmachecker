@@ -15,12 +15,16 @@ namespace Orchestrator.Database.Entities
 		/// <summary>
 		/// Текущее состояние
 		/// </summary>
-		public string CurrentState { get; set; }
+		public string? CurrentState { get; set; }
 
 		/// <summary>
 		/// Буква/Символ на который начинается название лекарства
 		/// </summary>
-		public string Letter { get; set; }
+		public required string Letter { get; set; }
+
+		public Guid? RequestId { get; set; }
+
+		public Uri? ResponseAddress { get; set; }
 
 		/// <summary>
 		/// Версия

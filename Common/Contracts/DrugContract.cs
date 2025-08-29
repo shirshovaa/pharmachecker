@@ -1,33 +1,23 @@
-using System.Text;
-
 namespace Common.Contracts
 {
 	public class DrugContract
 	{
-		public string Name { get; set; }
+		public string NameRus { get; set; }
 
-		public string Address { get; set; }
+		public string NameEng { get; set; }
 
-		public string Price { get; set; }
+		public string Index { get; set; }
 
-		public string LastUpdated { get; set; }
+		public string FormRus { get; set; }
 
-		public bool WasUpdated { get; set; } = false;
+		public string FormEng { get; set; }
 
-		public override string ToString()
-		{
-			var sb = new StringBuilder();
-			sb.Append($"В наличии в аптеке {Name} по адресу {Address}. Последнее обновление было в {LastUpdated}.");
-			if (WasUpdated)
-			{
-				sb.Append($" (Осталось после обновления)");
-			}
-			else
-			{
-				sb.Append($" (Новое)");
-			}
+		public string ManufacturerRus { get; set; }
 
-			return sb.ToString();
-		}
+		public string ManufacturerEng { get; set; }
+
+		public string CountryRus { get; set; }
+
+		public string CountryEng { get; set; }
 	}
 }

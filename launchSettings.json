@@ -1,0 +1,56 @@
+{
+  "profiles": {
+    "All": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchServiceName": "orchestrator",
+      "composeLaunchAction": "LaunchDebug",
+      "serviceActions": {
+        "orchestrator": "StartDebugging",
+        "postgres": "StartWithoutDebugging",
+        "rabbitmq": "StartWithoutDebugging",
+        "data-harvester-tabletka-by": "DoNotStart",
+        "data-harvester-apteka-103-by": "StartDebugging"
+      }
+    },
+    "Orchestrator Only": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchServiceName": "orchestrator",
+      "composeLaunchAction": "LaunchDebug",
+      "serviceActions": {
+        "orchestrator": "StartDebugging",
+        "postgres": "StartWithoutDebugging",
+        "rabbitmq": "StartWithoutDebugging",
+        "data-harvester-tabletka-by": "DoNotStart",
+        "data-harvester-apteka-103-by": "DoNotStart"
+      }
+    },
+    "DataHarvesterApteka103By Only": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchServiceName": "data-harvester-apteka-103-by",
+      "composeLaunchAction": "LaunchDebug",
+      "serviceActions": {
+        "orchestrator": "DoNotStart",
+        "postgres": "DoNotStart",
+        "rabbitmq": "DoNotStart",
+        "data-harvester-tabletka-by": "DoNotStart",
+        "data-harvester-apteka-103-by": "StartDebugging"
+      }
+    },
+    "DataHarvesterTabletkaBy Only": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchServiceName": "data-harvester-tabletka-by",
+      "composeLaunchAction": "LaunchDebug",
+      "serviceActions": {
+        "orchestrator": "DoNotStart",
+        "postgres": "DoNotStart",
+        "rabbitmq": "DoNotStart",
+        "data-harvester-tabletka-by": "StartDebugging",
+        "data-harvester-apteka-103-by": "DoNotStart"
+      }
+    }
+  }
+}

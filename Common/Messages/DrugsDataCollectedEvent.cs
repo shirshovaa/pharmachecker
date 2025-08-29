@@ -10,6 +10,6 @@ namespace Common.Messages
 
 		public DateTime CollectedAt { get; init; }
 
-		public List<DrugContract> Drugs { get; init; }
+		public List<DrugPharmacyPackage> Drugs { get; init; }
 	}
 }

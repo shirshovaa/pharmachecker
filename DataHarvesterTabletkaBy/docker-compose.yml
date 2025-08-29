@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  data-harvester-tabletka-by:
+    build:
+      context: ..
+      dockerfile: DataHarvesterTabletkaBy/Dockerfile
+    container_name: data-harvester-tabletka-by
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+    ports:
+      - "6001:80"
+    networks:
+      - pharmacy-network
+    restart: unless-stopped
+
+networks:
+  pharmacy-network:
+    driver: bridge

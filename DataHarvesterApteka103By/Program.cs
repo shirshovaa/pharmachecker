@@ -1,4 +1,5 @@
-using DataHarvesterApteka103By;
+using Common.Enums;
+using DataHarvesterApteka103By.Consumers;
 using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,8 +14,13 @@ builder.Services.AddMassTransit(mt =>
 			h.Password(builder.Configuration["RabbitMQ:Password"]);
 		});
 
-		cfg.ReceiveEndpoint("ProcessDrugsLetterQueue", e =>
+		cfg.ReceiveEndpoint($"process-drugs-letter-{PharmacySiteModule.Apteka103By.ToString()}", e =>
 		{
+			e.Bind("process-drugs-letter", s =>
+			{
+				s.RoutingKey = PharmacySiteModule.Apteka103By.ToString();
+				s.ExchangeType = "direct";
+			});
 			e.PrefetchCount = 5;
 			e.ConcurrentMessageLimit = 3;
 			e.ConfigureConsumer<ProcessDrugsForLetterCommandConsumer>(context);

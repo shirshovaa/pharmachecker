@@ -7,10 +7,12 @@
       "composeLaunchAction": "LaunchDebug",
       "serviceActions": {
         "orchestrator": "StartDebugging",
-        "postgres": "StartWithoutDebugging",
+        "postgres_orchestrator": "StartWithoutDebugging",
         "rabbitmq": "StartWithoutDebugging",
-        "data-harvester-tabletka-by": "DoNotStart",
-        "data-harvester-apteka-103-by": "StartDebugging"
+        "data-harvester-tabletka-by": "StartDebugging",
+        "data-harvester-apteka-103-by": "StartDebugging",
+        "aggregator": "StartDebugging",
+        "postgres_aggregator": "StartWithoutDebugging"
       }
     },
     "Orchestrator Only": {
@@ -23,7 +25,24 @@
         "postgres": "StartWithoutDebugging",
         "rabbitmq": "StartWithoutDebugging",
         "data-harvester-tabletka-by": "DoNotStart",
-        "data-harvester-apteka-103-by": "DoNotStart"
+        "data-harvester-apteka-103-by": "DoNotStart",
+        "aggregator": "DoNotStart",
+        "postgres_aggregator": "DoNotStart"
+      }
+    },
+    "Aggregator Only": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchServiceName": "orchestrator",
+      "composeLaunchAction": "LaunchDebug",
+      "serviceActions": {
+        "orchestrator": "DoNotStart",
+        "postgres": "DoNotStart",
+        "rabbitmq": "DoNotStart",
+        "data-harvester-tabletka-by": "DoNotStart",
+        "data-harvester-apteka-103-by": "DoNotStart",
+        "aggregator": "StartDebugging",
+        "postgres_aggregator": "StartWithoutDebugging"
       }
     },
     "DataHarvesterApteka103By Only": {
@@ -36,7 +55,9 @@
         "postgres": "DoNotStart",
         "rabbitmq": "DoNotStart",
         "data-harvester-tabletka-by": "DoNotStart",
-        "data-harvester-apteka-103-by": "StartDebugging"
+        "data-harvester-apteka-103-by": "StartDebugging",
+        "aggregator": "DoNotStart",
+        "postgres_aggregator": "DoNotStart"
       }
     },
     "DataHarvesterTabletkaBy Only": {
@@ -49,7 +70,9 @@
         "postgres": "DoNotStart",
         "rabbitmq": "DoNotStart",
         "data-harvester-tabletka-by": "StartDebugging",
-        "data-harvester-apteka-103-by": "DoNotStart"
+        "data-harvester-apteka-103-by": "DoNotStart",
+        "aggregator": "DoNotStart",
+        "postgres_aggregator": "DoNotStart"
       }
     }
   }

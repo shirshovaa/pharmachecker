@@ -2,22 +2,22 @@ namespace Common.Contracts
 {
 	public class DrugContract
 	{
-		public string NameRus { get; set; }
+		public string NameOriginal { get; set; }
 
-		public string NameEng { get; set; }
+		public string NameTranslate { get; set; }
 
 		public string Index { get; set; }
 
-		public string FormRus { get; set; }
+		public string FormOriginal { get; set; }
 
-		public string FormEng { get; set; }
+		public string FormTranslate { get; set; }
 
-		public string ManufacturerRus { get; set; }
+		public string ManufacturerOriginal { get; set; }
 
-		public string ManufacturerEng { get; set; }
+		public string ManufacturerTranslate { get; set; }
 
-		public string CountryRus { get; set; }
+		public string CountryOriginal { get; set; }
 
-		public string CountryEng { get; set; }
+		public string CountryTranslate { get; set; }
 	}
 }

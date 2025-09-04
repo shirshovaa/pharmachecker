@@ -17,7 +17,7 @@ namespace Common.Contracts
 		public override string ToString()
 		{
 			var sb = new StringBuilder();
-			sb.Append($"В наличии в аптеке {Package.Drug.NameRus} по адресу {Address}. Последнее обновление было в {LastUpdated}.");
+			sb.Append($"В наличии в аптеке {Package.Drug.NameOriginal} по адресу {Address}. Последнее обновление было в {LastUpdated}.");
 			if (WasUpdated)
 			{
 				sb.Append($" (Осталось после обновления)");

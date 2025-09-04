@@ -15,9 +15,9 @@ services:
     networks:
       - pharmacy-network
 
-  postgres:
+  postgres_orchestrator:
     image: postgres:13
-    container_name: postgres
+    container_name: postgres_orchestrator
     environment:
       POSTGRES_DB: orchestrator_db
       POSTGRES_USER: postgres
@@ -37,10 +37,10 @@ services:
     container_name: orchestrator
     depends_on:
       - rabbitmq
-      - postgres
+      - postgres_orchestrator
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__OrchestratorDatabase=Host=postgres;Port=5432;Database=orchestrator_db;Username=postgres;Password=postgres
+      - ConnectionStrings__OrchestratorDatabase=Host=postgres_orchestrator;Port=5432;Database=orchestrator_db;Username=postgres;Password=postgres
       - RabbitMQ__Host=rabbitmq
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest
@@ -98,7 +98,51 @@ services:
     security_opt:
       - seccomp:unconfined
 
+  postgres_aggregator:
+    image: postgres:13
+    container_name: postgres_aggregator
+    environment:
+     POSTGRES_DB: aggregator_db
+     POSTGRES_USER: postgres
+     POSTGRES_PASSWORD: postgres
+     POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+        - "7432:5432"
+    volumes:
+        - postgres-aggregator-data:/var/lib/postgresql/data
+    networks:
+        - pharmacy-network
+
+  aggregator:
+    build:
+      context: .
+      dockerfile: DataAggregator/Dockerfile
+    container_name: aggregator
+    depends_on:
+      - postgres_aggregator
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DataAggregatorDatabase=Host=postgres_aggregator;Port=5432;Database=aggregator_db;Username=postgres;Password=postgres
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+    volumes:
+      #- ~/.vsdbg:/remote_debugger:rw
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    ports:
+      - "7000:80"
+    networks:
+      - pharmacy-network
+    restart: unless-stopped
+    # Ключевые настройки для отладки:
+    cap_add:
+     - SYS_PTRACE
+    security_opt:
+     - seccomp:unconfined
+
 volumes:
+  postgres-aggregator-data:
   postgres-orchestrator-data:
   rabbitmq-data:
 

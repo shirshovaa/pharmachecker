@@ -13,9 +13,9 @@ services:
     networks:
       - pharmacy-network
 
-  postgres:
+  postgres_orchestrator:
     image: postgres:13
-    container_name: postgres
+    container_name: postgres_orchestrator
     environment:
       POSTGRES_DB: orchestrator_db
       POSTGRES_USER: postgres
@@ -35,10 +35,10 @@ services:
     container_name: orchestrator
     depends_on:
       - rabbitmq
-      - postgres
+      - postgres_orchestrator
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__OrchestratorDatabase=Host=postgres;Port=5432;Database=orchestrator_db;Username=postgres;Password=postgres
+      - ConnectionStrings__OrchestratorDatabase=Host=postgres_orchestrator;Port=5432;Database=orchestrator_db;Username=postgres;Password=postgres
       - RabbitMQ__Host=rabbitmq
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest

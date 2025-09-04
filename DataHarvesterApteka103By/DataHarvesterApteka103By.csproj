@@ -16,8 +16,4 @@
     <ProjectReference Include="..\DataHarvester\DataHarvester.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Consumers\" />
-  </ItemGroup>
-
 </Project>

@@ -22,6 +22,13 @@ namespace DataHarvester.Consumers
 
 		public async Task Consume(ConsumeContext<ProcessDrugsForLetterCommand> context)
 		{
+			if (context.Message.Source != Module)
+			{
+				_logger.LogDebug("Команда для источника {ExpectedSource} пропущена текущим источником {CurrentSource}",
+					context.Message.Source.ToString(), Module.ToString());
+				return;
+			}
+
 			var letter = context.Message.Letter;
 			_logger.LogInformation("Начинается сбор данных для буквы: {Letter}", letter);
 
@@ -29,8 +36,44 @@ namespace DataHarvester.Consumers
 
 			var fakeDrugs = new List<DrugPharmacyPackage>
 		{
-			new() { Drug = new DrugContract() { NameRus = $"{letter}абексол" }, PharmacySite = new() { Module = Module, SiteRoute = Route } },
-			new() { Drug = new DrugContract() { NameRus = $"{letter}енотдин" }, PharmacySite = new() { Module = Module, SiteRoute = Route } }
+			new() { 
+				Drug = new DrugContract()
+			{
+				NameOriginal = $"{letter}абексол",
+				NameTranslate = $"{letter}abeksol",
+				FormOriginal = "Гель",
+				FormTranslate = "Gel",
+				ManufacturerOriginal = "Экофарм",
+				ManufacturerTranslate = "Ecofarm",
+				CountryOriginal = "Беларусь", 
+				CountryTranslate = "Belarus", 
+				Index = "1" 
+			}, 
+				PharmacySite = new() 
+				{ 
+					Module = Module, 
+					SiteRoute = Route 
+				} 
+			},
+			new() {
+				Drug = new DrugContract()
+			{
+				NameOriginal = $"{letter}менадин",
+				NameTranslate = $"{letter}menadin",
+				FormOriginal = "Гель",
+				FormTranslate = "Gel",
+				ManufacturerOriginal = "Экофарм",
+				ManufacturerTranslate = "Ecofarm",
+				CountryOriginal = "Беларусь",
+				CountryTranslate = "Belarus",
+				Index = "1"
+			},
+				PharmacySite = new()
+				{
+					Module = Module,
+					SiteRoute = Route
+				}
+			},
 		};
 
 			_logger.LogInformation("Сбор данных для буквы {Letter} завершен. Найдено {Count} препаратов.",
@@ -40,6 +83,7 @@ namespace DataHarvester.Consumers
 			{
 				CorrelationId = context.Message.CorrelationId,
 				Letter = letter,
+				Source = Module,
 				CollectedAt = DateTime.UtcNow,
 				Drugs = fakeDrugs
 			});

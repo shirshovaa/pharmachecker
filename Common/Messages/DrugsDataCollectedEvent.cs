@@ -1,4 +1,5 @@
 using Common.Contracts;
+using Common.Enums;
 
 namespace Common.Messages
 {
@@ -7,6 +8,8 @@ namespace Common.Messages
 		public Guid CorrelationId { get; init; }
 
 		public string Letter { get; init; }
+
+		public PharmacySiteModule Source { get; set; }
 
 		public DateTime CollectedAt { get; init; }
 

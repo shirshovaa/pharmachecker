@@ -1,3 +1,4 @@
+using Common.Enums;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Orchestrator.Database.Maps;
@@ -22,9 +23,10 @@ namespace Orchestrator.Database.Entities
 		/// </summary>
 		public required string Letter { get; set; }
 
-		public Guid? RequestId { get; set; }
-
-		public Uri? ResponseAddress { get; set; }
+		/// <summary>
+		/// Список источников из которых пришел результат
+		/// </summary>
+		public ICollection<PharmacySiteModule> ReceivedSources { get; set; }
 
 		/// <summary>
 		/// Версия

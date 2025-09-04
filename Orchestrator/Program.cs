@@ -1,3 +1,4 @@
+using Common.Commands;
 using Common.Messages;
 using MassTransit;
 using MassTransit.Configuration;
@@ -78,6 +79,17 @@ builder.Services.AddMassTransit(x =>
 			e.UseInMemoryOutbox(context);
 			e.ConfigureConsumer<ScheduleMessageConsumer>(context);
 			e.ConfigureConsumer<CancelScheduledMessageConsumer>(context);
+		});
+
+		// Настройка очереди обработки лекарств
+		cfg.Message<ProcessDrugsForLetterCommand>(x =>
+		{
+			x.SetEntityName("process-drugs-letter");
+		});
+
+		cfg.Publish<ProcessDrugsForLetterCommand>(x =>
+		{
+			x.ExchangeType = "direct";
 		});
 
 		// Подключение RabbitMQ

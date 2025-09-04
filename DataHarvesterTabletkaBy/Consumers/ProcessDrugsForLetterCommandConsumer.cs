@@ -1,13 +1,13 @@
 using Common.Enums;
 using DataHarvester.Consumers;
 
-namespace DataHarvesterApteka103By
+namespace DataHarvesterTabletkaBy.Consumers
 {
 	public class ProcessDrugsForLetterCommandConsumer : ProcessDrugsForLetterCommandConsumerBase
 	{
-		protected override PharmacySiteModule Module => PharmacySiteModule.Apteka103By;
+		protected override PharmacySiteModule Module => PharmacySiteModule.TabletkaBy;
 
-		protected override string Route => "https://apteka.103.by/";
+		protected override string Route => "https://tabletka.by/";
 
 		public ProcessDrugsForLetterCommandConsumer(ILogger<ProcessDrugsForLetterCommandConsumer> logger) : base(logger)
 		{

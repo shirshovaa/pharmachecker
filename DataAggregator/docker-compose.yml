@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  postgres_aggregator:
+    image: postgres:13
+    container_name: postgres_aggregator
+    environment:
+      POSTGRES_DB: aggregator_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "7432:5432"
+    volumes:
+      - postgres-aggregator-data:/var/lib/postgresql/data
+    networks:
+      - pharmacy-network
+
+  aggregator:
+    build:
+      context: ..
+      dockerfile: DataAggregator/Dockerfile
+    container_name: aggregator
+    depends_on:
+      - postgres_aggregator
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DataAggregatorDatabase=Host=postgres_aggregator;Port=5432;Database=aggregator_db;Username=postgres;Password=postgres
+    volumes:
+      #- ~/.vsdbg:/remote_debugger:rw
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    ports:
+      - "7000:80"
+    networks:
+      - pharmacy-network
+    restart: unless-stopped
+    # Ключевые настройки для отладки:
+    # cap_add:
+    #  - SYS_PTRACE
+    #security_opt:
+    #  - seccomp:unconfined
+
+volumes:
+  postgres-aggregator-data:
+
+networks:
+  pharmacy-network:
+    driver: bridge

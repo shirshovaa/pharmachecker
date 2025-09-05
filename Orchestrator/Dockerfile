@@ -9,7 +9,6 @@ COPY ["Common/Common.csproj", "Common/"]
 
 RUN dotnet restore "Orchestrator/Orchestrator.csproj"
 
-
 COPY Orchestrator/ Orchestrator/
 COPY Common/ Common/
 

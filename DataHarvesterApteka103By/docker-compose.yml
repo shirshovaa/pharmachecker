@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  data-harvester-apteka-103-by:
+    build: 
+      context: ..
+      dockerfile: DataHarvesterApteka103By/Dockerfile
+    container_name: data-harvester-apteka-103-by
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+    ports:
+      - "5001:80"
+    networks:
+      - pharmacy-network
+    restart: unless-stopped
+
+networks:
+  pharmacy-network:
+    driver: bridge

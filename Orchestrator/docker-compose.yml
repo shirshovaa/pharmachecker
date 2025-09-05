@@ -3,7 +3,7 @@ version: '3.8'
 services:
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: orchestrator-rabbitmq
+    container_name: rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -11,11 +11,11 @@ services:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
     networks:
-      - orchestrator-network
+      - pharmacy-network
 
-  postgres-orchestrator:
+  postgres_orchestrator:
     image: postgres:13
-    container_name: postgres-orchestrator
+    container_name: postgres_orchestrator
     environment:
       POSTGRES_DB: orchestrator_db
       POSTGRES_USER: postgres
@@ -26,31 +26,40 @@ services:
     volumes:
       - postgres-orchestrator-data:/var/lib/postgresql/data
     networks:
-      - orchestrator-network
+      - pharmacy-network
 
-  orchestrator-app:
+  orchestrator:
     build:
       context: ..
       dockerfile: Orchestrator/Dockerfile
-    container_name: orchestrator-app
+    container_name: orchestrator
     depends_on:
       - rabbitmq
-      - postgres-orchestrator
+      - postgres_orchestrator
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__OrchestratorDatabase=Host=postgres-orchestrator;Port=5432;Database=orchestrator_db;Username=postgres;Password=postgres
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__OrchestratorDatabase=Host=postgres_orchestrator;Port=5432;Database=orchestrator_db;Username=postgres;Password=postgres
       - RabbitMQ__Host=rabbitmq
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest
+    volumes:
+      #- ~/.vsdbg:/remote_debugger:rw
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     ports:
       - "5000:80"
     networks:
-      - orchestrator-network
+      - pharmacy-network
     restart: unless-stopped
+    # Ключевые настройки для отладки:
+    # cap_add:
+    #  - SYS_PTRACE
+    #security_opt:
+    #  - seccomp:unconfined
 
 volumes:
   postgres-orchestrator-data:
 
 networks:
-  orchestrator-network:
+  pharmacy-network:
     driver: bridge

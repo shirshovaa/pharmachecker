@@ -1,3 +1,5 @@
+using Common.Enums;
+
 namespace Common.Commands
 {
 	public record ProcessDrugsForLetterCommand
@@ -5,5 +7,7 @@ namespace Common.Commands
 		public Guid CorrelationId { get; init; }
 
 		public string Letter { get; init; }
+
+		public PharmacySiteModule Source { get; init; }
 	}
 }

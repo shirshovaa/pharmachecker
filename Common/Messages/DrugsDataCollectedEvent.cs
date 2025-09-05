@@ -1,4 +1,5 @@
 using Common.Contracts;
+using Common.Enums;
 
 namespace Common.Messages
 {
@@ -8,8 +9,10 @@ namespace Common.Messages
 
 		public string Letter { get; init; }
 
+		public PharmacySiteModule Source { get; set; }
+
 		public DateTime CollectedAt { get; init; }
 
-		public List<DrugContract> Drugs { get; init; }
+		public List<DrugPharmacyPackage> Drugs { get; init; }
 	}
 }

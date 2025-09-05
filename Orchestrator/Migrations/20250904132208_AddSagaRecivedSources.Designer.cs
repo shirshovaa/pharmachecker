@@ -12,8 +12,8 @@ using Orchestrator.Database;
 namespace Orchestrator.Migrations
 {
     [DbContext(typeof(OrchestratorDbContext))]
-    [Migration("20250827135731_Initial")]
-    partial class Initial
+    [Migration("20250904132208_AddSagaRecivedSources")]
+    partial class AddSagaRecivedSources
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -200,7 +200,6 @@ namespace Orchestrator.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("CurrentState")
-                        .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
@@ -209,13 +208,17 @@ namespace Orchestrator.Migrations
                         .HasMaxLength(1)
                         .HasColumnType("character varying(1)");
 
+                    b.PrimitiveCollection<int[]>("ReceivedSources")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
                     b.Property<int>("Version")
                         .IsConcurrencyToken()
                         .HasColumnType("integer");
 
                     b.HasKey("CorrelationId");
 
-                    b.ToTable("drug_collection_saga_states", (string)null);
+                    b.ToTable("DrugCollectionSagaState", (string)null);
                 });
 
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>

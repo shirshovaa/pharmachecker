@@ -1,0 +1,151 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - pharmacy-network
+
+  postgres_orchestrator:
+    image: postgres:13
+    container_name: postgres_orchestrator
+    environment:
+      POSTGRES_DB: orchestrator_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "8432:5432"
+    volumes:
+      - postgres-orchestrator-data:/var/lib/postgresql/data
+    networks:
+      - pharmacy-network
+
+  orchestrator:
+    build:
+      context: .
+      dockerfile: Orchestrator/Dockerfile
+    container_name: orchestrator
+    depends_on:
+      - rabbitmq
+      - postgres_orchestrator
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__OrchestratorDatabase=Host=postgres_orchestrator;Port=5432;Database=orchestrator_db;Username=postgres;Password=postgres
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    ports:
+      - "5000:80"
+    networks:
+      - pharmacy-network
+    restart: unless-stopped
+    cap_add:
+      - SYS_PTRACE
+
+  data-harvester-tabletka-by:
+    build:
+      context: .
+      dockerfile: DataHarvesterTabletkaBy/Dockerfile
+    container_name: data-harvester-tabletka-by
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+    ports:
+      - "6001:80"
+    networks:
+      - pharmacy-network
+    restart: unless-stopped
+    # Ключевые настройки для отладки:
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+  data-harvester-apteka-103-by:
+    build: 
+      context: .
+      dockerfile: DataHarvesterApteka103By/Dockerfile
+    container_name: data-harvester-apteka-103-by
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+    ports:
+      - "5001:80"
+    networks:
+      - pharmacy-network
+    restart: unless-stopped
+    # Ключевые настройки для отладки:
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+  postgres_aggregator:
+    image: postgres:13
+    container_name: postgres_aggregator
+    environment:
+     POSTGRES_DB: aggregator_db
+     POSTGRES_USER: postgres
+     POSTGRES_PASSWORD: postgres
+     POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+        - "7432:5432"
+    volumes:
+        - postgres-aggregator-data:/var/lib/postgresql/data
+    networks:
+        - pharmacy-network
+
+  aggregator:
+    build:
+      context: .
+      dockerfile: DataAggregator/Dockerfile
+    container_name: aggregator
+    depends_on:
+      - postgres_aggregator
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DataAggregatorDatabase=Host=postgres_aggregator;Port=5432;Database=aggregator_db;Username=postgres;Password=postgres
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+    volumes:
+      #- ~/.vsdbg:/remote_debugger:rw
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    ports:
+      - "7000:80"
+    networks:
+      - pharmacy-network
+    restart: unless-stopped
+    # Ключевые настройки для отладки:
+    cap_add:
+     - SYS_PTRACE
+    security_opt:
+     - seccomp:unconfined
+
+volumes:
+  postgres-aggregator-data:
+  postgres-orchestrator-data:
+  rabbitmq-data:
+
+networks:
+  pharmacy-network:
+    driver: bridge

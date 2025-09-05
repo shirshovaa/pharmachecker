@@ -2,6 +2,7 @@ using Common.Commands;
 using Common.Contracts;
 using Common.Enums;
 using Common.Messages;
+using DataHarvester.Strategies;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
@@ -14,10 +15,14 @@ namespace DataHarvester.Consumers
 		protected abstract string Route { get; }
 
 		protected readonly ILogger<ProcessDrugsForLetterCommandConsumerBase> _logger;
+		protected readonly IDataHarvesterStrategy _strategy;
 
-		public ProcessDrugsForLetterCommandConsumerBase(ILogger<ProcessDrugsForLetterCommandConsumerBase> logger)
+		public ProcessDrugsForLetterCommandConsumerBase(
+			ILogger<ProcessDrugsForLetterCommandConsumerBase> logger, 
+			IDataHarvesterStrategy strategy)
 		{
 			_logger = logger;
+			_strategy = strategy;
 		}
 
 		public async Task Consume(ConsumeContext<ProcessDrugsForLetterCommand> context)
@@ -28,6 +33,8 @@ namespace DataHarvester.Consumers
 					context.Message.Source.ToString(), Module.ToString());
 				return;
 			}
+
+			var drugs = await _strategy.GetDrugsByLetterAsync(context.Message.Letter);
 
 			var letter = context.Message.Letter;
 			_logger.LogInformation("Начинается сбор данных для буквы: {Letter}", letter);

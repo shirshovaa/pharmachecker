@@ -1,5 +1,7 @@
 using Common.Enums;
+using DataHarvester.Strategies;
 using DataHarvesterApteka103By.Consumers;
+using DataHarvesterApteka103By.Strategies;
 using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,7 +32,10 @@ builder.Services.AddMassTransit(mt =>
 	mt.AddConsumer<ProcessDrugsForLetterCommandConsumer>();
 });
 
+builder.Services.AddHttpClient<DataHarvesterStrategy>();
+
 builder.Services.AddScoped<ProcessDrugsForLetterCommandConsumer>();
+builder.Services.AddScoped<IDataHarvesterStrategy, DataHarvesterStrategy>();
 
 var app = builder.Build();
 

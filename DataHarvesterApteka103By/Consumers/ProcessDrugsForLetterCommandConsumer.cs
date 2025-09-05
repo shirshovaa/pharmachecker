@@ -1,5 +1,6 @@
 using Common.Enums;
 using DataHarvester.Consumers;
+using DataHarvester.Strategies;
 
 namespace DataHarvesterApteka103By.Consumers
 {
@@ -9,7 +10,9 @@ namespace DataHarvesterApteka103By.Consumers
 
 		protected override string Route => "https://apteka.103.by/";
 
-		public ProcessDrugsForLetterCommandConsumer(ILogger<ProcessDrugsForLetterCommandConsumer> logger) : base(logger)
+		public ProcessDrugsForLetterCommandConsumer(
+			ILogger<ProcessDrugsForLetterCommandConsumer> logger,
+			IDataHarvesterStrategy strategy) : base(logger, strategy)
 		{
 		}
 	}

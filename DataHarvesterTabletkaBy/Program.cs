@@ -1,3 +1,4 @@
+using System.Net;
 using Common.Enums;
 using DataHarvester.Strategies;
 using DataHarvesterTabletkaBy.Consumers;
@@ -31,6 +32,23 @@ builder.Services.AddMassTransit(mt =>
 
 	mt.AddConsumer<ProcessDrugsForLetterCommandConsumer>();
 });
+
+builder.Services.AddHttpClient<IDataHarvesterStrategy, DataHarvesterStrategy>()
+	.ConfigurePrimaryHttpMessageHandler(() =>
+	{
+		var handler = new HttpClientHandler
+		{
+			UseCookies = true,
+			CookieContainer = new CookieContainer()
+		};
+
+		handler.CookieContainer.Add(new Uri("https://tabletka.by"),
+			new Cookie("lim-result", "100000"));
+		handler.CookieContainer.Add(new Uri("https://tabletka.by"),
+			new Cookie("regionId", "1001"));
+
+		return handler;
+	});
 
 builder.Services.AddScoped<ProcessDrugsForLetterCommandConsumer>();
 builder.Services.AddScoped<IDataHarvesterStrategy, DataHarvesterStrategy>();

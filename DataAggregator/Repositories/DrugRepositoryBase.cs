@@ -2,7 +2,6 @@ using Common.Contracts;
 using DataAggregator.Database;
 using DataAggregator.Database.Entities;
 using DataAggregator.Repositories.Interfaces;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAggregator.Repositories

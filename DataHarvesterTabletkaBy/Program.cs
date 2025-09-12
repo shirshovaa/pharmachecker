@@ -33,7 +33,7 @@ builder.Services.AddMassTransit(mt =>
 	mt.AddConsumer<ProcessDrugsForLetterCommandConsumer>();
 });
 
-builder.Services.AddHttpClient<IDataHarvesterStrategy, DataHarvesterStrategy>()
+builder.Services.AddHttpClient<IDataHarvesterStrategy, MockDataHarvesterStrategy>()
 	.ConfigurePrimaryHttpMessageHandler(() =>
 	{
 		var handler = new HttpClientHandler
@@ -51,7 +51,7 @@ builder.Services.AddHttpClient<IDataHarvesterStrategy, DataHarvesterStrategy>()
 	});
 
 builder.Services.AddScoped<ProcessDrugsForLetterCommandConsumer>();
-builder.Services.AddScoped<IDataHarvesterStrategy, DataHarvesterStrategy>();
+builder.Services.AddScoped<IDataHarvesterStrategy, MockDataHarvesterStrategy>();
 
 var app = builder.Build();
 

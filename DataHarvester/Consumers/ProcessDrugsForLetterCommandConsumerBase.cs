@@ -41,50 +41,8 @@ namespace DataHarvester.Consumers
 
 			await Task.Delay(TimeSpan.FromSeconds(new Random().Next(2, 5)));
 
-			var fakeDrugs = new List<DrugPharmacyPackage>
-		{
-			new() { 
-				Drug = new DrugContract()
-			{
-				NameOriginal = $"{letter}абексол",
-				NameTranslate = $"{letter}abeksol",
-				FormOriginal = "Гель",
-				FormTranslate = "Gel",
-				ManufacturerOriginal = "Экофарм",
-				ManufacturerTranslate = "Ecofarm",
-				CountryOriginal = "Беларусь", 
-				CountryTranslate = "Belarus", 
-				Index = "1" 
-			}, 
-				PharmacySite = new() 
-				{ 
-					Module = Module, 
-					SiteRoute = Route 
-				} 
-			},
-			new() {
-				Drug = new DrugContract()
-			{
-				NameOriginal = $"{letter}менадин",
-				NameTranslate = $"{letter}menadin",
-				FormOriginal = "Гель",
-				FormTranslate = "Gel",
-				ManufacturerOriginal = "Экофарм",
-				ManufacturerTranslate = "Ecofarm",
-				CountryOriginal = "Беларусь",
-				CountryTranslate = "Belarus",
-				Index = "1"
-			},
-				PharmacySite = new()
-				{
-					Module = Module,
-					SiteRoute = Route
-				}
-			},
-		};
-
 			_logger.LogInformation("Сбор данных для буквы {Letter} завершен. Найдено {Count} препаратов.",
-				letter, fakeDrugs.Count);
+				letter, drugs.Count);
 
 			await context.RespondAsync(new DrugsDataCollectedEvent
 			{
@@ -92,7 +50,7 @@ namespace DataHarvester.Consumers
 				Letter = letter,
 				Source = Module,
 				CollectedAt = DateTime.UtcNow,
-				Drugs = fakeDrugs
+				Drugs = (List<DrugPharmacyPackage>)drugs
 			});
 		}
 	}

@@ -3,10 +3,10 @@ using System.Net;
 using System.Web;
 using Common.Contracts;
 using Common.Enums;
+using DataHarvester.Models;
 using DataHarvester.Strategies;
 using DataHarvesterTabletkaBy.Models;
 using HtmlAgilityPack;
-using Microsoft.AspNetCore.Routing;
 
 namespace DataHarvesterTabletkaBy.Strategies
 {
@@ -14,7 +14,7 @@ namespace DataHarvesterTabletkaBy.Strategies
 	{
 		public PharmacySiteModule Module => PharmacySiteModule.TabletkaBy;
 
-		public string DrugLetterRoute => "https://tabletka.by/drugs/?search={0}";
+		public string DrugLetterRoute => "https://tabletka.by/drugs/?search=";
 
 		private readonly ConcurrentBag<DrugPharmacyPackage> _results = new();
 
@@ -41,7 +41,7 @@ namespace DataHarvesterTabletkaBy.Strategies
 
 		public async Task<ICollection<DrugPharmacyPackage>> GetDrugsByLetterAsync(string letter)
 		{
-			var drugLinks = await GetDrugListAsync(string.Format(DrugLetterRoute, Uri.EscapeDataString(letter)));
+			var drugLinks = await GetDrugListAsync($"{DrugLetterRoute}{Uri.EscapeDataString(letter)}");
 
 			if (drugLinks.Count == 0)
 			{

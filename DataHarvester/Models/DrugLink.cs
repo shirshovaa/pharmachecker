@@ -1,4 +1,4 @@
-namespace DataHarvesterApteka103By.Models
+namespace DataHarvester.Models
 {
 	public class DrugLink
 	{

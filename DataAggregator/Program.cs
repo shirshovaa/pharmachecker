@@ -1,14 +1,27 @@
+using Common.Enums;
 using DataAggregator.Consumers;
 using DataAggregator.Database;
+using DataAggregator.Repositories;
+using DataAggregator.Repositories.Interfaces;
+using DataAggregator.Services;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 var connectionString = builder.Configuration.GetConnectionString("AggregatorDatabase");
 builder.Services.AddDbContext<AggregatorDbContext>(_ => _.UseNpgsql(connectionString));
+
+var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
+builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConnectionString));
+builder.Services.AddScoped<IRadisCacheRepository, RadisCacheRepository>();
+
+builder.Services.AddKeyedScoped<IDrugRepository, DrugApteka103ByRepository>(PharmacySiteModule.Apteka103By);
+builder.Services.AddKeyedScoped<IDrugRepository, DrugTabletkaByRepository>(PharmacySiteModule.TabletkaBy);
+
+builder.Services.AddHostedService<DrugProcessingHostedService>();
 
 builder.Services.AddMassTransit(mt =>
 {

@@ -7,16 +7,16 @@ namespace DataAggregator.Database
 	{
 		public AggregatorDbContext(DbContextOptions<AggregatorDbContext> options) : base(options) { }
 
-		public DbSet<DrugEntity> Drugs { get; set; }
+		public DbSet<DrugApteka103ByEntity> DrugsApteka103By { get; set; }
 
-		public DbSet<PharmacySiteEntity> Sites { get; set; }
+		public DbSet<DrugTabletkaByEntity> DrugsTabletkaBy { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 
-			DrugEntity.Setup(modelBuilder);
-			PharmacySiteEntity.Setup(modelBuilder);
+			DrugApteka103ByEntity.Setup(modelBuilder);
+			DrugTabletkaByEntity.Setup(modelBuilder);
 		}
 	}
 }

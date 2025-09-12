@@ -32,10 +32,10 @@ builder.Services.AddMassTransit(mt =>
 	mt.AddConsumer<ProcessDrugsForLetterCommandConsumer>();
 });
 
-builder.Services.AddHttpClient<DataHarvesterStrategy>();
+builder.Services.AddHttpClient<MockDataHarvesterStrategy>();
 
 builder.Services.AddScoped<ProcessDrugsForLetterCommandConsumer>();
-builder.Services.AddScoped<IDataHarvesterStrategy, DataHarvesterStrategy>();
+builder.Services.AddScoped<IDataHarvesterStrategy, MockDataHarvesterStrategy>();
 
 var app = builder.Build();
 

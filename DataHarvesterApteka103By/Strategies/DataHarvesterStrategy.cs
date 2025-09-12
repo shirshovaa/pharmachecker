@@ -1,8 +1,8 @@
 using System.Collections.Concurrent;
 using Common.Contracts;
 using Common.Enums;
+using DataHarvester.Models;
 using DataHarvester.Strategies;
-using DataHarvesterApteka103By.Models;
 using HtmlAgilityPack;
 
 namespace DataHarvesterApteka103By.Strategies

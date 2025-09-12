@@ -1,83 +1,40 @@
 using Common.Messages;
-using DataAggregator.Database;
-using DataAggregator.Database.Entities;
+using DataAggregator.Repositories.Interfaces;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 
 namespace DataAggregator.Consumers
 {
 	public class DrugsDataAggregationConsumer : IConsumer<DrugsDataForAggregationEvent>
 	{
-		private readonly AggregatorDbContext _context;
+		private readonly IRadisCacheRepository _cacheRepository;
 		private readonly ILogger<DrugsDataAggregationConsumer> _logger;
 
 		public DrugsDataAggregationConsumer(
-			AggregatorDbContext context,
+			IRadisCacheRepository cacheRepository,
 			ILogger<DrugsDataAggregationConsumer> logger)
 		{
-			_context = context;
+			_cacheRepository = cacheRepository;
 			_logger = logger;
 		}
 
 		public async Task Consume(ConsumeContext<DrugsDataForAggregationEvent> context)
 		{
 			var message = context.Message;
+			var batchId = Guid.NewGuid();
 
-			_logger.LogInformation("Получены данные от {Source} для буквы {Letter} ({Count} препаратов)",
-				message.Source, message.Letter, message.Drugs.Count);
+			_logger.LogInformation("Получены данные от {Source} для буквы {Letter} ({Count} препаратов). BatchId: {BatchId}",
+				message.Source, message.Letter, message.Drugs.Count, batchId);
 
 			try
 			{
-				foreach (var package in message.Drugs)
-				{
-					var drug = _context.Drugs.Include(_ => _.PharmacySites).FirstOrDefault(_ => _.NameOriginal == package.Drug.NameOriginal);
-					var isNewDrug = false;
-					PharmacySiteEntity pharmacySite = null;
-					if (drug is null)
-					{
-						drug = new DrugEntity(package.Drug);
-						pharmacySite = new PharmacySiteEntity(package.PharmacySite, drug.Id);
-						drug.PharmacySites.Add(pharmacySite);
-						isNewDrug = true;
-					}
-					else
-					{
-						drug.Map(package.Drug);
+				// Сохраняем пакет в Redis вместо немедленной обработки
+				await _cacheRepository.StoreBatchAsync(batchId, message);
 
-						if (drug.PharmacySites is null)
-						{
-							drug.PharmacySites = new List<PharmacySiteEntity>();
-						}
-
-						pharmacySite = drug.PharmacySites.FirstOrDefault(_ => _.Module == package.PharmacySite.Module);
-
-						if (pharmacySite is null)
-						{
-							pharmacySite = new PharmacySiteEntity(package.PharmacySite, drug.Id);
-							_context.Sites.Add(pharmacySite);
-							drug.PharmacySites.Add(pharmacySite);
-						}
-						else
-						{
-							pharmacySite.Map(package.PharmacySite);
-						}
-					}
-
-					if (isNewDrug)
-					{
-						_context.Drugs.Add(drug);
-					}
-
-					_context.SaveChanges();
-				}
-
-				_logger.LogInformation("Данные от {Source} для буквы {Letter} успешно сохранены",
-					message.Source, message.Letter);
+				_logger.LogInformation("Пакет {BatchId} сохранен в Redis для последующей обработки", batchId);
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Ошибка при сохранении данных от {Source} для буквы {Letter}",
-					message.Source, message.Letter);
+				_logger.LogError(ex, "Ошибка при сохранении пакета {BatchId} в Redis", batchId);
 				throw;
 			}
 		}

@@ -113,6 +113,17 @@ services:
     networks:
         - pharmacy-network
 
+  redis_aggregator:
+    image: redis:7-alpine
+    container_name: redis_aggregator
+    ports:
+        - "7379:6379"
+    volumes:
+        - redis-aggregator-data:/data
+    networks:
+        - pharmacy-network
+    command: redis-server --appendonly yes
+
   aggregator:
     build:
       context: .
@@ -120,9 +131,11 @@ services:
     container_name: aggregator
     depends_on:
       - postgres_aggregator
+      - redis_aggregator
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DataAggregatorDatabase=Host=postgres_aggregator;Port=5432;Database=aggregator_db;Username=postgres;Password=postgres
+      - ConnectionStrings__Redis=redis_aggregator:6379
       - RabbitMQ__Host=rabbitmq
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest
@@ -144,6 +157,7 @@ services:
 volumes:
   postgres-aggregator-data:
   postgres-orchestrator-data:
+  redis-aggregator-data:
   rabbitmq-data:
 
 networks:

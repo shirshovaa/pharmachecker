@@ -21,6 +21,25 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{F65E9C4E-1A06-414D-BAF4-E8FCD309A352}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ELK", "ELK", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		ELK\docker-compose-elk.yml = ELK\docker-compose-elk.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "logstash", "logstash", "{F12DC24B-F1A5-4026-9780-5EF3D35047DB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{B25BB10C-598D-49D0-AED9-306FADBC77F9}"
+	ProjectSection(SolutionItems) = preProject
+		ELK\logstash\config\logstash.yml = ELK\logstash\config\logstash.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipeline", "pipeline", "{6A7863A3-6594-4689-8BE5-7A41632EE40C}"
+	ProjectSection(SolutionItems) = preProject
+		ELK\logstash\pipeline\logstash.conf = ELK\logstash\pipeline\logstash.conf
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging", "Logging\Logging.csproj", "{00AF038A-0E2C-424E-BE7C-040594018CF1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,9 +82,18 @@ Global
 		{F65E9C4E-1A06-414D-BAF4-E8FCD309A352}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F65E9C4E-1A06-414D-BAF4-E8FCD309A352}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F65E9C4E-1A06-414D-BAF4-E8FCD309A352}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00AF038A-0E2C-424E-BE7C-040594018CF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00AF038A-0E2C-424E-BE7C-040594018CF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00AF038A-0E2C-424E-BE7C-040594018CF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00AF038A-0E2C-424E-BE7C-040594018CF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F12DC24B-F1A5-4026-9780-5EF3D35047DB} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{B25BB10C-598D-49D0-AED9-306FADBC77F9} = {F12DC24B-F1A5-4026-9780-5EF3D35047DB}
+		{6A7863A3-6594-4689-8BE5-7A41632EE40C} = {F12DC24B-F1A5-4026-9780-5EF3D35047DB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {75EBFD7A-96EA-41EF-BEEC-2BB676896C77}

@@ -4,55 +4,73 @@ using DataAggregator.Database;
 using DataAggregator.Repositories;
 using DataAggregator.Repositories.Interfaces;
 using DataAggregator.Services;
+using Logging;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("AggregatorDatabase");
-builder.Services.AddDbContext<AggregatorDbContext>(_ => _.UseNpgsql(connectionString));
+builder.ConfigureLogging("Aggregator");
 
-var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
-builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConnectionString));
-builder.Services.AddScoped<IRadisCacheRepository, RadisCacheRepository>();
-
-builder.Services.AddKeyedScoped<IDrugRepository, DrugApteka103ByRepository>(PharmacySiteModule.Apteka103By);
-builder.Services.AddKeyedScoped<IDrugRepository, DrugTabletkaByRepository>(PharmacySiteModule.TabletkaBy);
-
-builder.Services.AddHostedService<DrugProcessingHostedService>();
-
-builder.Services.AddMassTransit(mt =>
+try
 {
-	mt.AddConsumer<DrugsDataAggregationConsumer>();
+	Log.Information("Starting Aggregator application");
 
-	mt.UsingRabbitMq((context, cfg) =>
+	var connectionString = builder.Configuration.GetConnectionString("AggregatorDatabase");
+	builder.Services.AddDbContext<AggregatorDbContext>(_ => _.UseNpgsql(connectionString));
+
+	var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
+	builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConnectionString));
+	builder.Services.AddScoped<IRadisCacheRepository, RadisCacheRepository>();
+
+	builder.Services.AddKeyedScoped<IDrugRepository, DrugApteka103ByRepository>(PharmacySiteModule.Apteka103By);
+	builder.Services.AddKeyedScoped<IDrugRepository, DrugTabletkaByRepository>(PharmacySiteModule.TabletkaBy);
+
+	builder.Services.AddHostedService<DrugProcessingHostedService>();
+
+	builder.Services.AddMassTransit(mt =>
 	{
-		cfg.Host(builder.Configuration["RabbitMQ:Host"], h =>
-		{
-			h.Username(builder.Configuration["RabbitMQ:Username"]);
-			h.Password(builder.Configuration["RabbitMQ:Password"]);
-		});
+		mt.AddConsumer<DrugsDataAggregationConsumer>();
 
-		cfg.ReceiveEndpoint("drugs-aggregation-queue", e =>
+		mt.UsingRabbitMq((context, cfg) =>
 		{
-			e.PrefetchCount = 1;
-			e.ConfigureConsumer<DrugsDataAggregationConsumer>(context);
+			cfg.Host(builder.Configuration["RabbitMQ:Host"], h =>
+			{
+				h.Username(builder.Configuration["RabbitMQ:Username"]);
+				h.Password(builder.Configuration["RabbitMQ:Password"]);
+			});
+
+			cfg.ReceiveEndpoint("drugs-aggregation-queue", e =>
+			{
+				e.PrefetchCount = 1;
+				e.ConfigureConsumer<DrugsDataAggregationConsumer>(context);
+			});
 		});
 	});
-});
 
-var app = builder.Build();
+	var app = builder.Build();
 
-// Миграция базы данных при запуске
-using (var scope = app.Services.CreateScope())
-{
-	var dbContext = scope.ServiceProvider.GetRequiredService<AggregatorDbContext>();
-	dbContext.Database.Migrate();
+	// Миграция базы данных при запуске
+	using (var scope = app.Services.CreateScope())
+	{
+		var dbContext = scope.ServiceProvider.GetRequiredService<AggregatorDbContext>();
+		dbContext.Database.Migrate();
+	}
+	// Configure the HTTP request pipeline.
+
+	app.UseHttpsRedirection();
+
+	Log.Information("Aggregator application started successfully");
+
+	app.Run();
 }
-// Configure the HTTP request pipeline.
-
-app.UseHttpsRedirection();
-
-app.Run();
+catch (Exception ex)
+{
+	Log.Fatal(ex, "Application Aggregator terminated unexpectedly");
+}
+finally
+{
+	await Log.CloseAndFlushAsync();
+}

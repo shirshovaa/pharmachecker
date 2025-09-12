@@ -3,58 +3,76 @@ using Common.Enums;
 using DataHarvester.Strategies;
 using DataHarvesterTabletkaBy.Consumers;
 using DataHarvesterTabletkaBy.Strategies;
+using Logging;
 using MassTransit;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.ConfigureLogging("DataHarvesterTabletkaBy");
 
-builder.Services.AddMassTransit(mt =>
+try
 {
-	mt.UsingRabbitMq((context, cfg) =>
-	{
-		cfg.Host(builder.Configuration["RabbitMQ:Host"], h =>
-		{
-			h.Username(builder.Configuration["RabbitMQ:Username"]);
-			h.Password(builder.Configuration["RabbitMQ:Password"]);
-		});
+	Log.Information("Starting DataHarvesterTabletkaBy application");
 
-		cfg.ReceiveEndpoint($"process-drugs-letter-{PharmacySiteModule.TabletkaBy.ToString()}", e =>
+	builder.Services.AddMassTransit(mt =>
+	{
+		mt.UsingRabbitMq((context, cfg) =>
 		{
-			e.Bind("process-drugs-letter", s =>
+			cfg.Host(builder.Configuration["RabbitMQ:Host"], h =>
 			{
-				s.RoutingKey = PharmacySiteModule.TabletkaBy.ToString();
-				s.ExchangeType = "direct";
+				h.Username(builder.Configuration["RabbitMQ:Username"]);
+				h.Password(builder.Configuration["RabbitMQ:Password"]);
 			});
-			e.PrefetchCount = 5;
-			e.ConcurrentMessageLimit = 3;
-			e.ConfigureConsumer<ProcessDrugsForLetterCommandConsumer>(context);
+
+			cfg.ReceiveEndpoint($"process-drugs-letter-{PharmacySiteModule.TabletkaBy.ToString()}", e =>
+			{
+				e.Bind("process-drugs-letter", s =>
+				{
+					s.RoutingKey = PharmacySiteModule.TabletkaBy.ToString();
+					s.ExchangeType = "direct";
+				});
+				e.PrefetchCount = 5;
+				e.ConcurrentMessageLimit = 3;
+				e.ConfigureConsumer<ProcessDrugsForLetterCommandConsumer>(context);
+			});
 		});
+
+		mt.AddConsumer<ProcessDrugsForLetterCommandConsumer>();
 	});
 
-	mt.AddConsumer<ProcessDrugsForLetterCommandConsumer>();
-});
-
-builder.Services.AddHttpClient<IDataHarvesterStrategy, MockDataHarvesterStrategy>()
-	.ConfigurePrimaryHttpMessageHandler(() =>
-	{
-		var handler = new HttpClientHandler
+	builder.Services.AddHttpClient<IDataHarvesterStrategy, MockDataHarvesterStrategy>()
+		.ConfigurePrimaryHttpMessageHandler(() =>
 		{
-			UseCookies = true,
-			CookieContainer = new CookieContainer()
-		};
+			var handler = new HttpClientHandler
+			{
+				UseCookies = true,
+				CookieContainer = new CookieContainer()
+			};
 
-		handler.CookieContainer.Add(new Uri("https://tabletka.by"),
-			new Cookie("lim-result", "100000"));
-		handler.CookieContainer.Add(new Uri("https://tabletka.by"),
-			new Cookie("regionId", "1001"));
+			handler.CookieContainer.Add(new Uri("https://tabletka.by"),
+				new Cookie("lim-result", "100000"));
+			handler.CookieContainer.Add(new Uri("https://tabletka.by"),
+				new Cookie("regionId", "1001"));
 
-		return handler;
-	});
+			return handler;
+		});
 
-builder.Services.AddScoped<ProcessDrugsForLetterCommandConsumer>();
-builder.Services.AddScoped<IDataHarvesterStrategy, MockDataHarvesterStrategy>();
+	builder.Services.AddScoped<ProcessDrugsForLetterCommandConsumer>();
+	builder.Services.AddScoped<IDataHarvesterStrategy, MockDataHarvesterStrategy>();
 
-var app = builder.Build();
+	var app = builder.Build();
 
-app.UseHttpsRedirection();
+	app.UseHttpsRedirection();
 
-app.Run();
+	Log.Information("DataHarvesterTabletkaBy application started successfully");
+
+	app.Run();
+}
+catch (Exception ex)
+{
+	Log.Fatal(ex, "Application DataHarvesterTabletkaBy terminated unexpectedly");
+}
+finally
+{
+	await Log.CloseAndFlushAsync();
+}

@@ -1,6 +1,8 @@
 version: '3.8'
 
 services:
+
+  #rabbitmq_orchestrator
   rabbitmq:
     image: rabbitmq:3.12-management
     container_name: rabbitmq
@@ -14,7 +16,8 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
       - pharmacy-network
-
+  
+  #postgres_orchestrator
   postgres_orchestrator:
     image: postgres:13
     container_name: postgres_orchestrator
@@ -30,6 +33,7 @@ services:
     networks:
       - pharmacy-network
 
+  #orchestrator
   orchestrator:
     build:
       context: .
@@ -55,7 +59,8 @@ services:
     restart: unless-stopped
     cap_add:
       - SYS_PTRACE
-
+      
+  #data-harvester-tabletka-by
   data-harvester-tabletka-by:
     build:
       context: .
@@ -77,6 +82,7 @@ services:
     security_opt:
       - seccomp:unconfined
 
+  #data-harvester-apteka-103-by
   data-harvester-apteka-103-by:
     build: 
       context: .
@@ -97,7 +103,8 @@ services:
       - SYS_PTRACE
     security_opt:
       - seccomp:unconfined
-
+      
+  #postgres_aggregator
   postgres_aggregator:
     image: postgres:13
     container_name: postgres_aggregator
@@ -113,6 +120,7 @@ services:
     networks:
         - pharmacy-network
 
+  #redis_aggregator
   redis_aggregator:
     image: redis:7-alpine
     container_name: redis_aggregator
@@ -123,7 +131,8 @@ services:
     networks:
         - pharmacy-network
     command: redis-server --appendonly yes
-
+    
+  #aggregator
   aggregator:
     build:
       context: .
@@ -162,4 +171,5 @@ volumes:
 
 networks:
   pharmacy-network:
+    name: pharmacy-network
     driver: bridge

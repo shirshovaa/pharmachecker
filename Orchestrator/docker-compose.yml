@@ -62,4 +62,5 @@ volumes:
 
 networks:
   pharmacy-network:
+    name: pharmacy-network
     driver: bridge

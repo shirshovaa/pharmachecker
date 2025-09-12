@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataHarvester\DataHarvester.csproj" />
+    <ProjectReference Include="..\Logging\Logging.csproj" />
   </ItemGroup>
 
 </Project>

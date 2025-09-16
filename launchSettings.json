@@ -6,14 +6,14 @@
       "composeLaunchServiceName": "orchestrator",
       "composeLaunchAction": "LaunchDebug",
       "serviceActions": {
-        "orchestrator": "StartDebugging",
         "postgres_orchestrator": "StartWithoutDebugging",
         "rabbitmq": "StartWithoutDebugging",
+        "orchestrator": "StartDebugging",
         "data-harvester-tabletka-by": "StartDebugging",
         "data-harvester-apteka-103-by": "StartDebugging",
-        "aggregator": "StartDebugging",
         "postgres_aggregator": "StartWithoutDebugging",
-        "redis_aggregator": "StartWithoutDebugging"
+        "redis_aggregator": "StartWithoutDebugging",
+        "aggregator": "StartDebugging"
       }
     },
     "Orchestrator Only": {
@@ -22,14 +22,14 @@
       "composeLaunchServiceName": "orchestrator",
       "composeLaunchAction": "LaunchDebug",
       "serviceActions": {
-        "orchestrator": "StartDebugging",
         "postgres_orchestrator": "StartWithoutDebugging",
         "rabbitmq": "StartWithoutDebugging",
+        "orchestrator": "StartDebugging",
         "data-harvester-tabletka-by": "DoNotStart",
         "data-harvester-apteka-103-by": "DoNotStart",
-        "aggregator": "DoNotStart",
         "postgres_aggregator": "DoNotStart",
-        "redis_aggregator": "DoNotStart"
+        "redis_aggregator": "DoNotStart",
+        "aggregator": "DoNotStart"
       }
     },
     "Aggregator Only": {
@@ -43,9 +43,9 @@
         "rabbitmq": "DoNotStart",
         "data-harvester-tabletka-by": "DoNotStart",
         "data-harvester-apteka-103-by": "DoNotStart",
-        "aggregator": "StartDebugging",
         "postgres_aggregator": "StartWithoutDebugging",
-        "redis_aggregator": "StartWithoutDebugging"
+        "redis_aggregator": "StartWithoutDebugging",
+        "aggregator": "StartDebugging"
       }
     },
     "DataHarvesterApteka103By Only": {

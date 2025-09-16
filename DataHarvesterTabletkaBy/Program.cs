@@ -5,6 +5,7 @@ using DataHarvesterTabletkaBy.Consumers;
 using DataHarvesterTabletkaBy.Strategies;
 using Logging;
 using MassTransit;
+using Monitoring;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,11 @@ builder.ConfigureLogging("DataHarvesterTabletkaBy");
 try
 {
 	Log.Information("Starting DataHarvesterTabletkaBy application");
+
+	builder.Services.AddControllers();
+
+	// Конфигурация мониторинга
+	builder.ConfigureHealthCheck();
 
 	builder.Services.AddMassTransit(mt =>
 	{
@@ -61,6 +67,12 @@ try
 	builder.Services.AddScoped<IDataHarvesterStrategy, MockDataHarvesterStrategy>();
 
 	var app = builder.Build();
+
+	app.UseRouting();
+
+	app.ConfigureMetrics();
+
+	app.MapControllers();
 
 	app.UseHttpsRedirection();
 

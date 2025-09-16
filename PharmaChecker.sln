@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ELK", "ELK", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
-		ELK\docker-compose-elk.yml = ELK\docker-compose-elk.yml
+		ELK\docker-compose.yml = ELK\docker-compose.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "logstash", "logstash", "{F12DC24B-F1A5-4026-9780-5EF3D35047DB}"
@@ -39,6 +39,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipeline", "pipeline", "{6A
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging", "Logging\Logging.csproj", "{00AF038A-0E2C-424E-BE7C-040594018CF1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Grafana", "Grafana", "{B1AAD8DF-0692-41E3-9693-0EB4B7E01DD4}"
+	ProjectSection(SolutionItems) = preProject
+		Grafana\docker-compose.yml = Grafana\docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prometheus", "prometheus", "{20F68467-3BEC-4BD7-9444-4A2D69F5B8AA}"
+	ProjectSection(SolutionItems) = preProject
+		Grafana\prometheus\prometheus.yml = Grafana\prometheus\prometheus.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monitoring", "Monitoring\Monitoring.csproj", "{CD2D42F2-EB3D-497A-BD8B-EACA39653C9C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "grafana", "grafana", "{5BD02C4D-7DE3-4EA6-B6B3-BE4002BBF3E9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "provisioning", "provisioning", "{0666B870-18BB-431C-804F-89187B1DD2AF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "datasources", "datasources", "{5355E96F-715E-4F13-B448-13B6FA40C4D7}"
+	ProjectSection(SolutionItems) = preProject
+		Grafana\grafana\provisioning\datasources\datasource.yml = Grafana\grafana\provisioning\datasources\datasource.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,6 +107,10 @@ Global
 		{00AF038A-0E2C-424E-BE7C-040594018CF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00AF038A-0E2C-424E-BE7C-040594018CF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00AF038A-0E2C-424E-BE7C-040594018CF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD2D42F2-EB3D-497A-BD8B-EACA39653C9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD2D42F2-EB3D-497A-BD8B-EACA39653C9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD2D42F2-EB3D-497A-BD8B-EACA39653C9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD2D42F2-EB3D-497A-BD8B-EACA39653C9C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,6 +119,10 @@ Global
 		{F12DC24B-F1A5-4026-9780-5EF3D35047DB} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{B25BB10C-598D-49D0-AED9-306FADBC77F9} = {F12DC24B-F1A5-4026-9780-5EF3D35047DB}
 		{6A7863A3-6594-4689-8BE5-7A41632EE40C} = {F12DC24B-F1A5-4026-9780-5EF3D35047DB}
+		{20F68467-3BEC-4BD7-9444-4A2D69F5B8AA} = {B1AAD8DF-0692-41E3-9693-0EB4B7E01DD4}
+		{5BD02C4D-7DE3-4EA6-B6B3-BE4002BBF3E9} = {B1AAD8DF-0692-41E3-9693-0EB4B7E01DD4}
+		{0666B870-18BB-431C-804F-89187B1DD2AF} = {5BD02C4D-7DE3-4EA6-B6B3-BE4002BBF3E9}
+		{5355E96F-715E-4F13-B448-13B6FA40C4D7} = {0666B870-18BB-431C-804F-89187B1DD2AF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {75EBFD7A-96EA-41EF-BEEC-2BB676896C77}

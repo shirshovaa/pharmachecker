@@ -4,6 +4,7 @@ using DataHarvesterApteka103By.Consumers;
 using DataHarvesterApteka103By.Strategies;
 using Logging;
 using MassTransit;
+using Monitoring;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,11 @@ builder.ConfigureLogging("DataHarvesterApteka103By");
 try
 {
 	Log.Information("Starting DataHarvesterApteka103By application");
+
+	builder.Services.AddControllers();
+
+	// Конфигурация мониторинга
+	builder.ConfigureHealthCheck();
 
 	builder.Services.AddMassTransit(mt =>
 	{
@@ -46,6 +52,12 @@ try
 	builder.Services.AddScoped<IDataHarvesterStrategy, MockDataHarvesterStrategy>();
 
 	var app = builder.Build();
+
+	app.UseRouting();
+
+	app.ConfigureMetrics();
+
+	app.MapControllers();
 
 	app.UseHttpsRedirection();
 

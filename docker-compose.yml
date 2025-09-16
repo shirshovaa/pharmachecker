@@ -16,7 +16,7 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
       - pharmacy-network
-  
+
   #postgres_orchestrator
   postgres_orchestrator:
     image: postgres:13
@@ -48,6 +48,8 @@ services:
       - RabbitMQ__Host=rabbitmq
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest
+      - DOTNET_SYSTEM_METRICS_ENABLED=true  # Включаем системные метрики .NET
+      - DOTNET_DIAGNOSTICS_METRICS_ENABLED=true
     volumes:
       - ~/.vsdbg:/remote_debugger:rw
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -59,7 +61,14 @@ services:
     restart: unless-stopped
     cap_add:
       - SYS_PTRACE
-      
+    labels:
+      - "prometheus.enable=true"
+      - "prometheus.port=80"
+      - "prometheus.path=/metrics"
+      - "prometheus.job=orchestrator"
+      - "prometheus.scrape=true"
+      - "prometheus.metrics=.net"  # Указываем тип метрик
+
   #data-harvester-tabletka-by
   data-harvester-tabletka-by:
     build:
@@ -71,16 +80,24 @@ services:
       - RabbitMQ__Host=rabbitmq
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest
+      - DOTNET_SYSTEM_METRICS_ENABLED=true  # Включаем системные метрики .NET
+      - DOTNET_DIAGNOSTICS_METRICS_ENABLED=true
     ports:
       - "6001:80"
     networks:
       - pharmacy-network
     restart: unless-stopped
-    # Ключевые настройки для отладки:
     cap_add:
       - SYS_PTRACE
     security_opt:
       - seccomp:unconfined
+    labels:
+      - "prometheus.enable=true"
+      - "prometheus.port=80"
+      - "prometheus.path=/metrics"
+      - "prometheus.job=data-harvester"
+      - "prometheus.instance=tabletka-by"
+      - "prometheus.metrics=.net"  # Указываем тип метрик
 
   #data-harvester-apteka-103-by
   data-harvester-apteka-103-by:
@@ -93,17 +110,25 @@ services:
       - RabbitMQ__Host=rabbitmq
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest
+      - DOTNET_SYSTEM_METRICS_ENABLED=true  # Включаем системные метрики .NET
+      - DOTNET_DIAGNOSTICS_METRICS_ENABLED=true
     ports:
       - "5001:80"
     networks:
       - pharmacy-network
     restart: unless-stopped
-    # Ключевые настройки для отладки:
     cap_add:
       - SYS_PTRACE
     security_opt:
       - seccomp:unconfined
-      
+    labels:
+      - "prometheus.enable=true"
+      - "prometheus.port=80"
+      - "prometheus.path=/metrics"
+      - "prometheus.job=data-harvester"
+      - "prometheus.instance=apteka-103-by"
+      - "prometheus.metrics=.net"  # Указываем тип метрик
+
   #postgres_aggregator
   postgres_aggregator:
     image: postgres:13
@@ -131,7 +156,7 @@ services:
     networks:
         - pharmacy-network
     command: redis-server --appendonly yes
-    
+
   #aggregator
   aggregator:
     build:
@@ -148,8 +173,9 @@ services:
       - RabbitMQ__Host=rabbitmq
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest
+      - DOTNET_SYSTEM_METRICS_ENABLED=true  # Включаем системные метрики .NET
+      - DOTNET_DIAGNOSTICS_METRICS_ENABLED=true
     volumes:
-      #- ~/.vsdbg:/remote_debugger:rw
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     ports:
@@ -157,11 +183,84 @@ services:
     networks:
       - pharmacy-network
     restart: unless-stopped
-    # Ключевые настройки для отладки:
     cap_add:
      - SYS_PTRACE
     security_opt:
      - seccomp:unconfined
+    labels:
+      - "prometheus.enable=true"
+      - "prometheus.port=80"
+      - "prometheus.path=/metrics"
+      - "prometheus.job=aggregator"
+      - "prometheus.scrape=true"
+      - "prometheus.metrics=.net"  # Указываем тип метрик
+
+# Экспортер для Postgres orchestrator
+  postgres-exporter-orchestrator:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postgres-exporter-orchestrator
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:postgres@postgres_orchestrator:5432/orchestrator_db?sslmode=disable"
+    ports:
+      - "9187:9187"
+    networks:
+      - pharmacy-network
+    depends_on:
+      - postgres_orchestrator
+    labels:
+      - "prometheus.enable=true"
+      - "prometheus.port=9187"
+      - "prometheus.path=/metrics"
+      - "prometheus.job=postgres-exporter"
+      - "prometheus.instance=orchestrator"
+
+# Экспортер для Postgres aggregator
+  postgres-exporter-aggregator:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postgres-exporter-aggregator
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:postgres@postgres_aggregator:5432/aggregator_db?sslmode=disable"
+    ports:
+      - "9188:9188"
+    networks:
+      - pharmacy-network
+    depends_on:
+      - postgres_aggregator
+    labels:
+      - "prometheus.enable=true"
+      - "prometheus.port=9188"
+      - "prometheus.path=/metrics"
+      - "prometheus.job=postgres-exporter"
+      - "prometheus.instance=aggregator"
+
+ # Экспортер для Redis
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: redis-exporter
+    environment:
+      REDIS_ADDR: "redis_aggregator:6379"
+    ports:
+      - "9121:9121"
+    networks:
+      - pharmacy-network
+    depends_on:
+      - redis_aggregator
+
+ # Экспортер для RabbitMQ
+  rabbitmq-exporter:
+    image: kbudde/rabbitmq-exporter:latest
+    container_name: rabbitmq-exporter
+    environment:
+      - RABBIT_URL=http://rabbitmq:15672
+      - RABBIT_USER=guest
+      - RABBIT_PASSWORD=guest
+      - PUBLISH_PORT=9419
+    ports:
+      - "9419:9419"
+    networks:
+      - pharmacy-network
+    depends_on:
+      - rabbitmq
 
 volumes:
   postgres-aggregator-data:

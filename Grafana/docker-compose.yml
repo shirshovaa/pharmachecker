@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  pharmacy-prometheus:
+    image: prom/prometheus:v2.51.2
+    container_name: pharmacy-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+      - //./pipe/docker_engine:/var/run/docker.sock
+    networks:
+      - pharmacy-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/console_templates'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+
+  pharmacy-grafana:
+    image: grafana/grafana:10.4.2
+    container_name: pharmacy-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    networks:
+      - pharmacy-network
+    depends_on:
+      - pharmacy-prometheus    
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  pharmacy-network:
+    name: pharmacy-network  
+    driver: bridge 

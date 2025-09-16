@@ -4,12 +4,15 @@ using MassTransit;
 using MassTransit.EntityFrameworkCoreIntegration;
 using MassTransit.QuartzIntegration;
 using Microsoft.EntityFrameworkCore;
+using Monitoring;
 using Orchestrator.Database;
 using Orchestrator.Database.Entities;
 using Orchestrator.Saga;
 using Orchestrator.Services;
+using Prometheus;
 using Quartz;
 using Serilog;
+using static System.Net.Mime.MediaTypeNames;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +25,11 @@ try
 	// Конфигурация PostgreSQL
 	var connectionString = builder.Configuration.GetConnectionString("OrchestratorDatabase");
 	builder.Services.AddDbContext<OrchestratorDbContext>(_ => _.UseNpgsql(connectionString));
+
+	builder.Services.AddControllers();
+
+	// Конфигурация мониторинга
+	builder.ConfigureHealthCheck();
 
 	// Регистрация Quartz
 	builder.Services.AddQuartz();
@@ -113,8 +121,6 @@ try
 
 	var app = builder.Build();
 
-	// Configure the HTTP request pipeline.
-
 	// Миграция базы данных при запуске
 	using (var scope = app.Services.CreateScope())
 	{
@@ -122,6 +128,12 @@ try
 		dbContext.Database.Migrate();
 	}
 
+	app.UseRouting();
+
+	app.ConfigureMetrics();
+
+	app.MapControllers();
+	
 	app.UseHttpsRedirection();
 
 	Log.Information("Orchestrator application started successfully");

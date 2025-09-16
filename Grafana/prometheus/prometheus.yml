@@ -1,0 +1,53 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Автоматическое обнаружение Docker сервисов
+  - job_name: 'docker-services'
+    docker_sd_configs:
+      - host: tcp://host.docker.internal:2375
+        refresh_interval: 15s
+    relabel_configs:
+      - source_labels: [__meta_docker_container_label_prometheus_enable]
+        action: keep
+        regex: true
+      - source_labels: [__meta_docker_container_label_prometheus_path]
+        target_label: __metrics_path__
+        regex: (.+)
+        replacement: ${1}
+      - source_labels: [__address__, __meta_docker_container_label_prometheus_port]
+        target_label: __address__
+        regex: (.+):(?:\d+);(\d+)
+        replacement: $1:$2
+      - source_labels: [__meta_docker_container_label_prometheus_job]
+        target_label: job
+      - source_labels: [__meta_docker_container_label_prometheus_instance]
+        target_label: instance
+      - source_labels: [__meta_docker_container_name]
+        target_label: container
+
+  # Статический target для самого Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+  
+  # - job_name: 'orchestrator'
+  #   static_configs:
+  #     - targets: ['orchestrator:80']
+  #   metrics_path: /metrics
+
+  # - job_name: 'data-harvester-tabletka-by'
+  #   static_configs:
+  #     - targets: ['data-harvester-tabletka-by:80']
+  #   metrics_path: /metrics
+
+  # - job_name: 'data-harvester-apteka-103-by'
+  #   static_configs:
+  #     - targets: ['data-harvester-apteka-103-by:80']
+  #   metrics_path: /metrics
+
+  # - job_name: 'aggregator'
+  #   static_configs:
+  #     - targets: ['aggregator:80']
+  #   metrics_path: /metrics

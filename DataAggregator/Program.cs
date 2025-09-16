@@ -7,8 +7,10 @@ using DataAggregator.Services;
 using Logging;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Monitoring;
 using Serilog;
 using StackExchange.Redis;
+using static System.Net.Mime.MediaTypeNames;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,11 @@ try
 	var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
 	builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConnectionString));
 	builder.Services.AddScoped<IRadisCacheRepository, RadisCacheRepository>();
+
+	builder.Services.AddControllers();
+
+	// Конфигурация мониторинга
+	builder.ConfigureHealthCheck();
 
 	builder.Services.AddKeyedScoped<IDrugRepository, DrugApteka103ByRepository>(PharmacySiteModule.Apteka103By);
 	builder.Services.AddKeyedScoped<IDrugRepository, DrugTabletkaByRepository>(PharmacySiteModule.TabletkaBy);
@@ -58,7 +65,12 @@ try
 		var dbContext = scope.ServiceProvider.GetRequiredService<AggregatorDbContext>();
 		dbContext.Database.Migrate();
 	}
-	// Configure the HTTP request pipeline.
+
+	app.UseRouting();
+
+	app.ConfigureMetrics();
+
+	app.MapControllers();
 
 	app.UseHttpsRedirection();
 
